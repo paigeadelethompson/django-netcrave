@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "django-ldap"
+version = "0.1.0"
+description = "Django application for managing LDAP infrastructure"
+authors = ["Admin <admin@example.com>"]
+readme = "README.md"
+
+packages = [
+    { include = "netcrave" },
+    { include = "netcrave_ldap" },
+    { include = "netcrave_ca" },
+    { include = "netcrave_crypto" },
+    { include = "netcrave_settings" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django = "^4.2"
+python-ldap = { path = "3rdparty/python-ldap" }
+
+[tool.poetry.scripts]
+netcrave = "netcrave.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

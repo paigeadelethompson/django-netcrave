@@ -1,0 +1,24 @@
+# Auto-generated
+.*.swp
+*.pyc
+__pycache__/
+.tox
+/.cache
+/.pytest_cache
+
+# shared libs installed by 'setup.py test'
+/Lib/*.so*
+/Lib/*.dylib
+/Lib/*.pyd
+
+# Build related
+*.egg-info
+build/
+dist/
+PKG-INFO
+
+# generated in the sample workflow
+/__venv__/
+
+# test dirs
+python-ldap-test-*

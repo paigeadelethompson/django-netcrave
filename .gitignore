@@ -1,0 +1,35 @@
+*__pycache__*
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Database files
+db.sqlite3
+*.sqlite
+*.sqlite3
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Poetry
+poetry.lock
+*.egg-info/
+
+# Package builds
+dist/
+build/
+*.whl
