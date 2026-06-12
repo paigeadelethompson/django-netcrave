@@ -22,5 +22,3 @@ Features:
 - Type conversion between Django fields and LDAP attributes
 """
 
-# Import the database wrapper for registration
-from .database_wrapper import DatabaseWrapper
