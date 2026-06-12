@@ -11,10 +11,10 @@ def process_icap_request(
     self,
     client_ip: str,
     method: str,
-    request_headers: Dict[str, str],
+    request_headers: dict,
     request_body: bytes,
-    principal: Optional[str] = None,
-) -> Dict[str, Any]:
+    principal: str = None,
+) -> dict:
     """
     Process an ICAP request asynchronously.
 
@@ -28,37 +28,63 @@ def process_icap_request(
     Returns:
         Dictionary with processing results
     """
-    from netcrave_icap.models import ICAPLog
+    from netcrave_icap.models import ICAPUserProfile
+    from netcrave_ldap.utils.ldap_backend import get_ldap_connection
 
     try:
-        # Log the incoming request
-        log_entry = ICAPLog.objects.create(
-            client_ip=client_ip,
-            method=method,
-            principal=principal or "anonymous",
-            status="ALLOWED" if principal else "BLOCKED",
-            response_code=200,
-        )
+        # Validate access via LDAP for principal
+        access_allowed = True
+        if principal:
+            try:
+                conn = get_ldap_connection()
+                search_base = getattr(
+                    __import__("django.conf", fromlist=["settings"]).settings,
+                    "LDAP_OU_ICAP_USERS",
+                    "ou=icap-users," + __import__("django.conf", fromlist=["settings"]).settings.LDAP_BASE_DN
+                )
+                filter_str = f"(krbPrincipalName={principal})"
+                result = conn.search(search_base, filterstr=filter_str)
+                if result:
+                    entry = result[0][1]
+                    allow_attr = entry.get("icapAllowICAPAccess", [b"TRUE"])
+                    access_allowed = allow_attr[0].decode().upper() == "TRUE"
+            except Exception as e:
+                logger.error(f"LDAP validation failed: {e}")
+                access_allowed = False
+
+        # Log the incoming request (to syslog via logger)
+        if access_allowed:
+            logger.info(
+                "ICAP request allowed",
+                extra={
+                    "client_ip": client_ip,
+                    "method": method,
+                    "principal": principal or "anonymous",
+                },
+            )
+            status = "ALLOWED"
+        else:
+            logger.warning(
+                "ICAP request blocked",
+                extra={
+                    "client_ip": client_ip,
+                    "method": method,
+                    "principal": principal or "anonymous",
+                },
+            )
+            status = "BLOCKED"
 
         # Determine processing based on method
         if method == "OPTIONS":
             result = handle_options_request()
-        elif method == "REQMOD":
-            result = handle_reqmod_request(request_headers, request_body)
-        elif method == "RESPMOD":
-            result = handle_respmod_request(request_headers, request_body)
+        elif method in ("REQMOD", "RESPMOD"):
+            result = handle_mod_request(method, request_headers, request_body)
         else:
             result = {"error": f"Unsupported ICAP method: {method}"}
 
-        # Update log with results
-        log_entry.response_message = str(result.get("message", ""))
-        if "processing_time_ms" in result:
-            log_entry.processing_time_ms = result["processing_time_ms"]
-        log_entry.save()
-
         return {
-            "success": True,
-            "log_id": log_entry.id,
+            "success": access_allowed,
+            "status": status,
             **result,
         }
 
@@ -66,26 +92,13 @@ def process_icap_request(
         logger.error(f"ICAP request processing failed: {exc}")
         self.retry(exc=exc, countdown=2 ** self.request.retries)
 
-        # Create error log entry
-        try:
-            ICAPLog.objects.create(
-                client_ip=client_ip,
-                method=method,
-                principal=principal or "anonymous",
-                status="ERROR",
-                response_code=500,
-                response_message=str(exc),
-            )
-        except Exception:
-            pass
-
         return {
             "success": False,
             "error": str(exc),
         }
 
 
-def handle_options_request() -> Dict[str, Any]:
+def handle_options_request() -> dict:
     """Handle ICAP OPTIONS request."""
     return {
         "message": "ICAP service available",
@@ -97,32 +110,16 @@ def handle_options_request() -> Dict[str, Any]:
     }
 
 
-def handle_reqmod_request(
-    headers: Dict[str, str],
+def handle_mod_request(
+    method: str,
+    headers: dict,
     body: bytes,
-) -> Dict[str, Any]:
-    """Handle ICAP REQMOD request."""
-    # Check if user is authenticated
+) -> dict:
+    """Handle REQMOD or RESPMOD requests."""
     principal = headers.get("Principal", "")
 
     return {
-        "message": "Request modification processed",
-        "principal": principal or "anonymous",
-        "action": "allow",
-        "headers_modified": False,
-        "body_modified": False,
-    }
-
-
-def handle_respmod_request(
-    headers: Dict[str, str],
-    body: bytes,
-) -> Dict[str, Any]:
-    """Handle ICAP RESPMOD request."""
-    principal = headers.get("Principal", "")
-
-    return {
-        "message": "Response modification processed",
+        "message": f"{method} request processed",
         "principal": principal or "anonymous",
         "action": "allow",
         "headers_modified": False,
@@ -134,10 +131,10 @@ def handle_respmod_request(
 def log_icap_event(
     event_type: str,
     client_ip: str,
-    details: Dict[str, Any],
+    details: dict,
 ) -> None:
     """
-    Log an ICAP-related event.
+    Log an ICAP-related event to syslog.
 
     Args:
         event_type: Type of event (auth_success, auth_fail, etc.)

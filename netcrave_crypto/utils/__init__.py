@@ -5,6 +5,10 @@ from .crypto import (
     hash_password_ssha,
     verify_password_ssha,
     generate_kerberos_salt,
+    generate_rsa_keypair,
+    generate_csr,
+    sign_certificate,
+    create_self_signed_ca,
 )
 
 __all__ = [
@@ -12,4 +16,8 @@ __all__ = [
     "hash_password_ssha",
     "verify_password_ssha",
     "generate_kerberos_salt",
+    "generate_rsa_keypair",
+    "generate_csr",
+    "sign_certificate",
+    "create_self_signed_ca",
 ]
