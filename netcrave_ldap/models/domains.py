@@ -8,13 +8,21 @@ This module provides:
 - GroupOfNames: General group model with DN-based membership
 """
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from django.conf import settings
 from django.db import models
 
 from .base import LDAPCounter, LDAPManager, LDAPModel
 from netcrave_settings.utils import defaults
+
+# Import decorator for automatic LDAP attribute generation
+try:
+    from netcrave_ldapdb.backends.decorators import ldap_auto_attrs
+except ImportError:
+    # Fallback - create a no-op decorator
+    def ldap_auto_attrs(cls):
+        return cls
 
 
 class PosixAccountMixin(models.Model):
@@ -99,6 +107,7 @@ class PosixAccountMixin(models.Model):
         super().save(*args, **kwargs)
 
 
+@ldap_auto_attrs
 class InetOrgPerson(LDAPModel):
     """Primary user model combining inetOrgPerson with auxiliary classes.
 
@@ -449,6 +458,7 @@ class InetOrgPerson(LDAPModel):
         super().save(*args, **kwargs)
 
 
+@ldap_auto_attrs
 class PosixGroup(LDAPModel):
     """POSIX group model.
 
@@ -513,6 +523,7 @@ class PosixGroup(LDAPModel):
         super().save(*args, **kwargs)
 
 
+@ldap_auto_attrs
 class GroupOfNames(LDAPModel):
     """General group model with DN-based membership.
 

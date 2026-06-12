@@ -1,7 +1,7 @@
 """Admin configuration for netcrave LDAP models."""
 
 # Import all admin modules to register them
-from . import domains, powerdns, asterisk, openldap, radius, kerberos, sendmail, postfix, msuser
+from . import domains, powerdns, asterisk, openldap, radius, kerberos, sendmail, postfix
 
 # Re-export admin classes for convenience
 from .domains import InetOrgPersonAdmin, PosixGroupAdmin, GroupOfNamesAdmin
@@ -18,7 +18,6 @@ from .radius import RadiusProfileAdmin
 from .kerberos import KrbRealmContainerAdmin, KrbPrincipalAdmin, KrbPwdPolicyAdmin, KrbTicketPolicyAdmin
 from .sendmail import SendmailMTAAdmin, SendmailMapEntryAdmin
 from .postfix import PostfixAliasAdmin, PostfixTransportAdmin
-from .msuser import MsUserAdmin
 
 __all__ = [
     # Domain models
@@ -50,6 +49,4 @@ __all__ = [
     # Postfix
     "PostfixAliasAdmin",
     "PostfixTransportAdmin",
-    # MS User
-    "MsUserAdmin",
 ]

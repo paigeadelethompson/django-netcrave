@@ -37,13 +37,11 @@ from .kerberos import (
 from .radius import RadiusProfile
 from .sendmail import SendmailMTA, SendmailMapEntry
 from .postfix import PostfixAlias, PostfixTransport
-from .msuser import MsUser
-
 __all__ = [
     # Base classes
     "LDAPModel",
     "LDAPManager",
-    # Domains (Groups)
+    # Domains (Users and Groups)
     "PosixGroup",
     "GroupOfNames",
     "PosixAccountMixin",
@@ -75,6 +73,4 @@ __all__ = [
     # Postfix
     "PostfixAlias",
     "PostfixTransport",
-    # MS User
-    "MsUser",
 ]

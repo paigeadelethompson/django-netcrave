@@ -64,11 +64,15 @@ TEMPLATES = [
 
 ASGI_APPLICATION = "netcrave.asgi.application"
 
-# Database
+# Database - Using Netcrave LDAP Backend for OpenLDAP
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "netcrave_ldapdb.backends",
+        # LDAP Server Configuration
+        "LDAP_SERVER_URI": os.environ.get("LDAP_SERVER_URI", "ldap://localhost:389"),
+        "LDAP_BASE_DN": os.environ.get("LDAP_BASE_DN", "dc=example,dc=com"),
+        "LDAP_BIND_DN": os.environ.get("LDAP_BIND_DN", None),
+        "LDAP_BIND_PASSWORD": os.environ.get("LDAP_BIND_PASSWORD", None),
     }
 }
 
