@@ -141,7 +141,6 @@ def validate_acme_request_access(request, operation: str = "issue") -> tuple[boo
         Tuple of (allowed, error_message)
     """
     # Check for Kerberos principal in request headers or environment
-    # In production, this would be set by the web server after auth
 
     principal = None
 
@@ -220,3 +219,65 @@ def format_acme_problem_details(error_type: str, detail: str = "") -> dict:
         result["detail"] = detail
 
     return result
+
+
+def find_certificate_profile(hostname: str) -> Optional['CertificateProfile']:
+    """Find the certificate profile that matches a hostname.
+
+    Args:
+        hostname: The hostname being requested
+
+    Returns:
+        CertificateProfile that matches, or None
+    """
+    try:
+        from netcrave_ca.models import CertificateProfile
+        from django.conf import settings as dj_settings
+
+        # Only query if ACME is enabled
+        acme_enabled = getattr(dj_settings, "ACME_ENABLED", True)
+        if not acme_enabled:
+            return None
+
+        profiles = CertificateProfile.objects.filter(enabled=True)
+
+        for profile in profiles:
+            if profile.matches_hostname(hostname):
+                # Check Kerberos requirements
+                if profile.allow_kerberos_auth:
+                    # Profile requires Kerberos - caller must verify this separately
+                    pass
+                return profile
+
+    except Exception as e:
+        logger = __import__('logging').getLogger(__name__)
+        logger.warning(f"Error finding certificate profile for {hostname}: {e}")
+
+    return None
+
+
+def get_default_certificate_profile() -> Optional['CertificateProfile']:
+    """Get the default certificate profile for ACME requests.
+
+    Returns:
+        Default CertificateProfile, or None if not configured
+    """
+    try:
+        from netcrave_ca.models import CertificateProfile
+
+        # Try to find a profile marked as default
+        try:
+            return CertificateProfile.objects.get(is_default=True)
+        except CertificateProfile.DoesNotExist:
+            pass
+
+        # Fallback: get first enabled profile
+        profiles = CertificateProfile.objects.filter(enabled=True)
+        if profiles.exists():
+            return profiles.first()
+
+    except Exception as e:
+        logger = __import__('logging').getLogger(__name__)
+        logger.warning(f"Error getting default certificate profile: {e}")
+
+    return None

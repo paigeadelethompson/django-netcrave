@@ -9,7 +9,7 @@ from .models import ICAPUserProfile, ICAPService
 class ICAPUserProfileAdmin(admin.ModelAdmin):
     """Admin for ICAP user profiles."""
 
-    list_display = ("user_dn", "allow_icap_access", "max_connections")
+    list_display = ("dn", "allow_icap_access", "max_connections")
     list_filter = ("allow_icap_access",)
 
 

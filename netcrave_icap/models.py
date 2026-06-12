@@ -5,7 +5,44 @@ from typing import List
 from django.conf import settings
 from django.db import models
 
-from .base import LDAPModel
+# Import LDAPModel from netcrave_ldap since we're using the same pattern
+try:
+    from netcrave_ldap.models.base import LDAPModel
+except ImportError:
+    # Fallback if netcrave_ldap is not available during early imports
+    class LDAPModel(models.Model):
+        """Abstract base model for LDAP-backed models."""
+        ldap_base_dn: str = ""
+        object_classes: List[str] = []
+        class Meta:
+            abstract = True
+
+        def __str__(self) -> str:
+            return self.get_dn()
+
+        @property
+        def dn(self) -> str:
+            raise NotImplementedError("Subclasses must implement dn property")
+
+        def get_dn(self) -> str:
+            return self.dn
+
+        @classmethod
+        def get_base_dn(cls) -> str:
+            if cls.ldap_base_dn:
+                return cls.ldap_base_dn
+            raise NotImplementedError("Subclasses must implement ldap_base_dn or get_base_dn()")
+
+        @classmethod
+        def get_object_classes(cls) -> List[str]:
+            return cls.object_classes.copy()
+
+        def get_ldap_attributes(self) -> dict:
+            return {}
+
+        def save(self, *args: any, **kwargs: any) -> None:
+            self.full_clean()
+            super().save(*args, **kwargs)
 
 
 class ICAPUserProfile(LDAPModel):
