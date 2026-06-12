@@ -1,8 +1,4 @@
-"""
-SQL Compiler module for netcrave_ldapdb backend.
-
-This compiles Django Q objects to LDAP filters.
-"""
+"""SQL Compiler module for netcrave_ldapdb backend."""
 
 import logging
 from typing import Any, Dict, List, Optional, Tuple
@@ -23,7 +19,7 @@ class LDAPQuery:
         self.base_dn = base_dn or getattr(model, 'ldap_base_dn', settings.LDAP_BASE_DN)
         self.filter_parts: List[str] = []
         self.attrs: Optional[List[str]] = None
-        self.scope = 2  # SCOPE_SUBTREE
+        self.scope = 2
 
     def add_filter(self, ldap_filter: str) -> None:
         """Add a filter part."""
@@ -63,7 +59,6 @@ class LDAPWhereNode(WhereNode):
         elif self.connector == 'OR':
             return "(|%s)" % "".join(f"({child})" for child in children)
 
-        # Default: AND
         return "(&%s)" % "".join(f"({child})" for child in children)
 
 
@@ -98,7 +93,6 @@ class LDAPQueryCompiler(SQLCompiler):
 
         ldap_query = LDAPQuery(model, base_dn)
 
-        # Get fields to retrieve
         if self.query.select_all:
             ldap_query.set_attrs(['*', '+'])
         else:
@@ -119,7 +113,6 @@ class LDAPQueryCompiler(SQLCompiler):
         """Execute the query and return results."""
         sql, params = self.as_sql()
 
-        # Execute via cursor
         with self.connection.cursor() as cursor:
             cursor.execute(sql, params)
             if result_type == MULTI:
@@ -133,10 +126,8 @@ class LDAPInsertCompiler(SQLCompiler):
 
     def execute_sql(self, return_id=False):
         """Execute insert and optionally return ID."""
-        # Get the model instance from the query
         model = self.query.model
 
-        # Build attributes from the instance
         attrs = {}
         for field in model._meta.fields:
             if hasattr(field, 'db_column'):
@@ -148,7 +139,6 @@ class LDAPInsertCompiler(SQLCompiler):
             if value is not None:
                 attrs[ldap_attr] = [str(value)] if not isinstance(value, list) else value
 
-        # Get DN
         dn = self.query.objs[0].dn
 
         return dn
@@ -165,10 +155,9 @@ class LDAPDeleteCompiler(SQLCompiler):
 
     def execute_sql(self, result_type=MULTI):
         """Execute delete and return count."""
-        # Get the DN from the queryset
         model = self.query.model
         dn = self.query.objs[0].dn if hasattr(self.query, 'objs') else None
 
         if dn:
-            return 1  # Success count
+            return 1
         return 0

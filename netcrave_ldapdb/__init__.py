@@ -1,3 +1,5 @@
-"""netcrave_ldapdb - Custom Django database backend for OpenLDAP."""
+"""Netcrave LDAP Database Backend for Django."""
 
-default_app_config = 'netcrave_ldapdb.apps.NetcraveLdapDBConfig'
+from netcrave_ldapdb.backends import DatabaseWrapper, get_ldap_connection
+
+__all__ = ['DatabaseWrapper', 'get_ldap_connection']

@@ -1,11 +1,7 @@
-"""
-Operations module for netcrave_ldapdb backend.
-
-This handles Django query compilation and SQL generation.
-"""
+"""Operations module for netcrave_ldapdb backend."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from django.conf import settings
 from django.db.backends.base.operations import BaseDatabaseOperations
@@ -28,7 +24,6 @@ class DatabaseOperations(BaseDatabaseOperations):
     # Quoting
     quote_name = lambda self, name: f'"{name}"'
 
-    # Aggregates
     def aggregate_filter(self, filter_expr):
         """Convert aggregate filter to LDAP filter."""
         return ''
@@ -37,22 +32,17 @@ class DatabaseOperations(BaseDatabaseOperations):
         """Return SQL for DISTINCT."""
         return []
 
-    # End date SQL
-    end_day_sql = "%(field)s >= '%(year)s-%(month)s-%(day)s'"
-    end_month_sql = "%(field)s >= '%(year)s-%(month)s-01'"
-
-    # Formatting
     def format_for_duration_arithmetic(self, sql):
         """Format for duration arithmetic."""
         return sql
 
     def fetch_returned_insert_id(self, cursor):
         """Fetch inserted ID from cursor."""
-        return 1  # LDAP doesn't use numeric IDs like SQL
+        return 1
 
     def fulltext_search_sql(self, field_name):
         """Return FULLTEXT search SQL."""
-        return ''  # No full-text search in LDAP
+        return ''
 
     def last_executed_query(self, *args, **kwargs):
         """Return the last executed query."""
@@ -66,7 +56,7 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def max_in_list_size(self):
         """Return maximum items in IN list."""
-        return 0  # LDAP doesn't use IN clauses like SQL
+        return 0
 
     def prep_for_like_query(self, x):
         """Prepare value for LIKE query."""
@@ -80,11 +70,6 @@ class DatabaseOperations(BaseDatabaseOperations):
         """Process CLOB values."""
         return value
 
-    def quote_name(self, name):
-        """Quote a name for SQL."""
-        # LDAP doesn't need quoting like SQL
-        return name.strip('"\'`')
-
     def regex_lookup(self, lookup_type):
         """Get regex pattern for lookup."""
         return '%s'
@@ -95,7 +80,7 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def sql_flush(self, *args, **kwargs):
         """Return SQL to flush tables."""
-        return []  # No SQL FLUSH in LDAP
+        return []
 
     def style_placeholder_field(self, field_name):
         """Style a placeholder for field."""
@@ -119,7 +104,7 @@ class DatabaseOperations(BaseDatabaseOperations):
     # Django 4.2+ methods
     def bulk_insert_sql(self, *args, **kwargs):
         """Return SQL for bulk insert."""
-        return ''  # No bulk insert in LDAP
+        return ''
 
     def combine_expression(self, connector, sub_expressions):
         """Combine expressions for WHERE clause."""

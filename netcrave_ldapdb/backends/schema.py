@@ -1,8 +1,4 @@
-"""
-Schema module for netcrave_ldapdb backend.
-
-This handles the mapping between Django field types and LDAP attribute types.
-"""
+"""Schema module for netcrave_ldapdb backend."""
 
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -21,15 +17,12 @@ def django_field_to_ldap_attr(field: Field) -> Tuple[str, str]:
     Returns:
         tuple: (ldap_attribute_name, python_type)
     """
-    # Get the LDAP attribute name from field db_column or convert from column name
     if hasattr(field, 'db_column') and field.db_column:
         ldap_attr = field.db_column
     else:
-        # Convert snake_case to kebab-case for LDAP attributes
         ldap_attr = field.name.replace('_', '-')
 
-    # Map Django types to LDAP syntaxes
-    ldap_type = 'IA5String'  # Default for most text attributes
+    ldap_type = 'IA5String'
 
     if isinstance(field, (IntegerField, AutoField, PositiveIntegerField,
                           SmallIntegerField, BigIntegerField)):
@@ -39,7 +32,7 @@ def django_field_to_ldap_attr(field: Field) -> Tuple[str, str]:
     elif isinstance(field, (DateField, DateTimeField)):
         ldap_type = 'GeneralizedTime'
     elif isinstance(field, DecimalField):
-        ldap_type = 'STRING'  # LDAP doesn't have native decimal support
+        ldap_type = 'STRING'
     elif isinstance(field, EmailField):
         ldap_type = 'IA5String'
     elif isinstance(field, GenericIPAddressField):
@@ -65,7 +58,6 @@ def convert_ldap_value(value: Any, field_type: str) -> Any:
         if len(value) == 1:
             value = value[0]
         else:
-            # Return list for multi-value attributes
             return [convert_ldap_value(v, field_type) for v in value]
 
     if value is None:
@@ -81,9 +73,7 @@ def convert_ldap_value(value: Any, field_type: str) -> Any:
             return value
         return str(value).upper() in ('TRUE', 'YES', '1')
     elif field_type == 'GeneralizedTime':
-        # Parse LDAP generalized time format: YYYYMMDDHHMMSSZ
         from datetime import datetime
-
         try:
             return datetime.strptime(str(value), "%Y%m%d%H%M%SZ")
         except ValueError:
@@ -96,7 +86,7 @@ def get_ldap_object_classes(model) -> List[str]:
     """Get the LDAP object classes for a Django model."""
     if hasattr(model, 'object_classes'):
         return list(model.object_classes)
-    return ['top', 'inetOrgPerson']  # Default
+    return ['top', 'inetOrgPerson']
 
 
 def build_ldap_filter(field: Field, value: Any, lookup_type: str = 'exact') -> str:
@@ -106,7 +96,7 @@ def build_ldap_filter(field: Field, value: Any, lookup_type: str = 'exact') -> s
     Args:
         field: The Django field
         value: The value to filter on
-        lookup_type: The Django lookup type (exact, contains,startswith, etc.)
+        lookup_type: The Django lookup type
 
     Returns:
         LDAP filter string
@@ -118,7 +108,6 @@ def build_ldap_filter(field: Field, value: Any, lookup_type: str = 'exact') -> s
             return f"(!({ldap_attr}=*))" if value else f"({ldap_attr}=*)"
         return f"(!({ldap_attr}=*))"
 
-    # Escape special characters for LDAP filter
     escaped = str(value)
     escaped = escaped.replace('\\', '\\5c')
     escaped = escaped.replace('*', '\\2a')
@@ -148,7 +137,6 @@ def build_ldap_filter(field: Field, value: Any, lookup_type: str = 'exact') -> s
     elif lookup_type == 'lt':
         return f"({ldap_attr}<{escaped})"
 
-    # Default: exact match
     return f"({ldap_attr}={escaped})"
 
 
@@ -159,21 +147,19 @@ class LDAPSchemaEditor:
         self.connection = connection
 
     def create_model(self, model) -> None:
-        """Create a new LDAP entry type (object class)."""
-        # For LDAP, we don't need to create the schema in advance
-        # The objectClass is determined by the model's object_classes attribute
+        """Create a new LDAP entry type."""
         pass
 
     def delete_model(self, model) -> None:
         """Delete all entries of a model type."""
-        from netcrave_ldap.utils.ldap_backend import get_ldap_connection
+        from netcrave_ldapdb.backends import get_ldap_connection
 
         base_dn = model.ldap_base_dn if hasattr(model, 'ldap_base_dn') else settings.LDAP_BASE_DN
         get_ldap_connection().search(base_dn, filterstr=f"(objectClass={model.__name__})")
 
     def add_field(self, model, field) -> None:
         """Add a new LDAP attribute to existing entries."""
-        pass  # LDAP doesn't require schema updates for new attributes
+        pass
 
     def remove_field(self, model, field) -> None:
         """Remove an attribute (soft delete - set to empty)."""

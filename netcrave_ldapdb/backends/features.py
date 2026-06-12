@@ -1,8 +1,4 @@
-"""
-Features module for netcrave_ldapdb backend.
-
-This defines what features the LDAP backend supports.
-"""
+"""Features module for netcrave_ldapdb backend."""
 
 from django.db.backends.base.features import BaseDatabaseFeatures
 
