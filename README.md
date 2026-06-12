@@ -31,12 +31,15 @@ Django application for managing comprehensive LDAP infrastructure including user
   - Ticket policies (lifetime, renewable age)
 
 ### PKI / Certificate Authority
-- **Certificate Storage** (userCertificate, cACertificate, CRL) - X.509 certificate management
+- **Certificate Storage** (userCertificate, cACertificate, CRL) - X.509 certificate management in LDAP
+- **Certificate Templates** - Define reusable certificate configurations (validity, key size, key usage)
+- **Certificate Profiles** - Map hostnames to templates for ACME automated issuance
 - **Certificate Operations**:
-  - Self-signed CA generation
-  - CSR creation and signing
-  - Certificate revocation
-  - CRL generation
+  - Self-signed CA generation (`netcrave pki_init_ca`)
+  - Certificate issuance with templates (`netcrave pki_issue_cert`)
+  - Certificate revocation (`netcrave pki_revoke_cert`)
+  - CRL generation (`netcrave pki_generate_crl`)
+  - Certificate listing from LDAP (`netcrave pki_list_certs`)
 
 ### Network Services
 - **ICAP Server Integration** - Squid proxy content adaptation server
@@ -187,6 +190,17 @@ netcrave start_icap
 | `ldap_info` | Display LDAP tree structure, entry counts, schema info |
 | `start_icap` | Start Celery worker for ICAP processing |
 
+### PKI Management Commands
+
+| Command | Description |
+|---------|-------------|
+| `pki_init_ca` | Initialize a new self-signed CA certificate |
+| `pki_issue_cert` | Issue a certificate signed by the CA using a template |
+| `pki_revoke_cert` | Revoke a certificate in the Certificate Authority |
+| `pki_list_certs` | List certificates stored in LDAP directory |
+| `pki_generate_crl` | Generate a Certificate Revocation List (CRL) |
+| `pki_create_default_profile` | Create default certificate profile for ACME |
+
 ## Admin Interface
 
 Access the Django admin at `/admin/`:
@@ -206,8 +220,10 @@ Access the Django admin at `/admin/`:
 - **RADIUS**: Client registration and user RADIUS profiles
 - **Kerberos**: Realm configuration, principals, password/ticket policies
 - **PKI/Certificate Authority**:
-  - Certificate storage and management
-  - Certificate issuance via ACME protocol
+  - Certificate templates for reusable certificate configurations
+  - Certificate profiles mapping hostnames to templates for ACME
+  - Certificate records stored in LDAP (valid/revoked/expired)
+  - Kerberos authentication required for ACME operations (network-admins only)
   - OCSP responder for certificate status
 
 ### Network Services
@@ -240,12 +256,12 @@ netcrave_ldap/           # Core LDAP models app
 │   └── ldap_info.py     # Show directory information
 
 netcrave_ca/             # Certificate Authority app
-├── models/
-├── admin/
+├── models.py            # LDAP-backed certificate templates/profiles/records
 ├── utils/
+│   └── acme.py          # ACME protocol utilities with Kerberos auth
 ├── views/
 │   ├── ocsp.py          # OCSP responder
-│   └── acme.py          # ACME protocol endpoints
+│   └── acme.py          # ACME protocol endpoints with Kerberos auth
 └── management/commands/
 
 netcrave_icap/           # ICAP server integration
@@ -263,7 +279,7 @@ schemas/                 # LDAP schema files
 ├── asterisk/            # Asterisk schema
 ├── powerdns/            # PowerDNS schema
 ├── sendmail/            # Sendmail schema
-└── netcrave/            # Netcrave custom schemas (ICAP)
+└── netcrave/            # Netcrave custom schemas (ICAP, Certificate)
 
 3rdparty/python-ldap/    # vendored python-ldap library
 ```
@@ -284,6 +300,7 @@ All models conform to the LDAP schemas in `schemas/`:
 | powerdns/dnsdomain2.schema | PowerDNS DNS zone management |
 | sendmail/sendmail.schema | Sendmail MTA configuration |
 | netcrave/netcrave-icap.schema | ICAP service configuration |
+| netcrave/netcrave-certificate.schema | Certificate templates, profiles, and records |
 
 ## ACME Protocol Support
 
