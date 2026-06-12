@@ -6,7 +6,7 @@ This module provides:
 - RadiusClient: RADIUS client (NAS/AP) registration
 """
 
-from typing import List
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models
@@ -14,11 +14,6 @@ from django.db import models
 from .base import LDAPModel
 
 
-class Computer(LDAPModel):
-    mac_address='macAddress',
-    description='description',
-    ou='ou',
-)
 class Computer(LDAPModel):
     """Computer/device model combining device and ipHost.
 

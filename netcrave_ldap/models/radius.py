@@ -5,7 +5,7 @@ This module provides:
 - RadiusProfile: User RADIUS profile attributes (auxiliary class)
 """
 
-from typing import List
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models

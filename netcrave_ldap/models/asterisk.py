@@ -9,7 +9,7 @@ This module provides:
 - AsteriskConfig: Configuration entries
 """
 
-from typing import List
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models

@@ -6,7 +6,7 @@ This module provides:
 - PostfixTransport: Transport maps for routing
 """
 
-from typing import List
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models

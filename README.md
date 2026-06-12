@@ -1,6 +1,6 @@
 # Netcrave LDAP Management
 
-Django application for managing comprehensive LDAP infrastructure including users, groups, DNS, Asterisk telephony, RADIUS authentication, Kerberos identity management, PKI/Certificate Authority, ICAP proxy integration, and more.
+Django application for managing comprehensive LDAP infrastructure including users, groups, DNS, Asterisk telephony, RADIUS authentication, Kerberos identity management, PKI/Certificate Authority, ICAP proxy integration, OpenDKIM email signing, and more.
 
 ## Features
 
@@ -34,12 +34,17 @@ Django application for managing comprehensive LDAP infrastructure including user
 - **Certificate Storage** (userCertificate, cACertificate, CRL) - X.509 certificate management in LDAP
 - **Certificate Templates** - Define reusable certificate configurations (validity, key size, key usage)
 - **Certificate Profiles** - Map hostnames to templates for ACME automated issuance
+- **Certificate Records** - Store issued certificates with metadata (status, revocation info, storage paths)
+- **Certificate Authority** - CA configuration and management
 - **Certificate Operations**:
   - Self-signed CA generation (`netcrave pki_init_ca`)
   - Certificate issuance with templates (`netcrave pki_issue_cert`)
   - Certificate revocation (`netcrave pki_revoke_cert`)
   - CRL generation (`netcrave pki_generate_crl`)
   - Certificate listing from LDAP (`netcrave pki_list_certs`)
+
+### Email Security
+- **OpenDKIM** - DKIM selector and key container for email signing
 
 ### Network Services
 - **ICAP Server Integration** - Squid proxy content adaptation server
@@ -89,6 +94,8 @@ pip install dist/django-ldap-0.1.0-py3-none-any.whl
 | `LDAP_OU_RADIUS` | ou=radius | RADIUS clients/container |
 | `LDAP_OU_KRB` | ou=kerberos | Kerberos realm container |
 | `LDAP_OU_ICAP` | ou=icap | ICAP service configuration |
+| `LDAP_OU_DKIM` | ou=dkim | OpenDKIM configuration |
+| `LDAP_OU_CERTIFICATES` | ou=certificates | PKI/Certificate storage OU |
 
 ### Auto-Increment Counters
 

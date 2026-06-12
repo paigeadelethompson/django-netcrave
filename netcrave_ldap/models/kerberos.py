@@ -8,7 +8,7 @@ This module provides:
 - KrbTicketPolicy: Ticket policies
 """
 
-from typing import List
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models
@@ -468,6 +468,234 @@ class KrbTicketPolicy(LDAPModel):
     @property
     def dn(self) -> str:
         """Get the DN for this policy."""
+        from ..utils.dn import build_ou
+
+        base = build_ou(settings.LDAP_OU_KRB)
+        return f"cn={self.cn},{base}"
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class KrbContainer(LDAPModel):
+    """Kerberos container.
+
+    Based on krb5.schema krbContainer.
+    STRUCTURAL object class.
+
+    MUST: cn
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        help_text="Container name",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
+    object_classes = ["krbContainer"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+    }
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_krb_containers"
+        verbose_name = "Kerberos Container"
+        verbose_name_plural = "Kerberos Containers"
+
+    def __str__(self) -> str:
+        return self.cn
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this container."""
+        from ..utils.dn import build_ou
+
+        base = build_ou(settings.LDAP_OU_KRB)
+        return f"cn={self.cn},{base}"
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class KrbService(LDAPModel):
+    """Base class for Kerberos services (abstract).
+
+    Based on krb5.schema krbService.
+    ABSTRACT object class.
+
+    MUST: cn
+    MAY: krbHostServer, krbRealmReferences
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        help_text="Service name",
+    )
+    krb_host_server = models.JSONField(
+        blank=True,
+        default=list,
+        verbose_name="krbHostServer",
+        help_text="List of host servers (host#protocol#port format)",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
+    object_classes = ["krbService"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'krb_host_server': 'krbHostServer',
+    }
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_krb_services"
+        verbose_name = "Kerberos Service"
+        verbose_name_plural = "Kerberos Services"
+        abstract = True
+
+    def __str__(self) -> str:
+        return self.cn
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this service."""
+        from ..utils.dn import build_ou
+
+        base = build_ou(settings.LDAP_OU_KRB)
+        return f"cn={self.cn},{base}"
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class KrbKdcService(LDAPModel):
+    """Kerberos KDC service.
+
+    Based on krb5.schema krbKdcService.
+    STRUCTURAL object class (extends krbService).
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        help_text="KDC server name",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
+    object_classes = ["krbKdcService"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+    }
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_krb_kdc_services"
+        verbose_name = "Kerberos KDC Service"
+        verbose_name_plural = "Kerberos KDC Services"
+
+    def __str__(self) -> str:
+        return self.cn
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this KDC service."""
+        from ..utils.dn import build_ou
+
+        base = build_ou(settings.LDAP_OU_KRB)
+        return f"cn={self.cn},{base}"
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class KrbPwdService(LDAPModel):
+    """Kerberos password service.
+
+    Based on krb5.schema krbPwdService.
+    STRUCTURAL object class (extends krbService).
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        help_text="Password server name",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
+    object_classes = ["krbPwdService"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+    }
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_krb_pwd_services"
+        verbose_name = "Kerberos Password Service"
+        verbose_name_plural = "Kerberos Password Services"
+
+    def __str__(self) -> str:
+        return self.cn
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this password service."""
+        from ..utils.dn import build_ou
+
+        base = build_ou(settings.LDAP_OU_KRB)
+        return f"cn={self.cn},{base}"
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class KrbAdmService(LDAPModel):
+    """Kerberos administration service.
+
+    Based on krb5.schema krbAdmService.
+    STRUCTURAL object class (extends krbService).
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        help_text="Admin server name",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
+    object_classes = ["krbAdmService"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+    }
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_krb_adm_services"
+        verbose_name = "Kerberos Admin Service"
+        verbose_name_plural = "Kerberos Admin Services"
+
+    def __str__(self) -> str:
+        return self.cn
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this admin service."""
         from ..utils.dn import build_ou
 
         base = build_ou(settings.LDAP_OU_KRB)

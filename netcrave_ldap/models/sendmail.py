@@ -6,7 +6,7 @@ This module provides:
 - SendmailMapEntry: Map/alias entries (aliases, transport maps)
 """
 
-from typing import List
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models
@@ -170,6 +170,132 @@ class SendmailMapEntry(LDAPModel):
         # Map name becomes part of DN to organize entries
         map_name = self.sendmail_mta_map_name.replace("-", "_")
         return f"cn={map_name},{base}"
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class SendmailMTAClass(LDAPModel):
+    """Sendmail MTA class configuration.
+
+    Based on sendmail.schema sendmailMTAClass.
+    AUXILIARY object class.
+
+    MUST: cn, sendmailMTAClassName
+    MAY: sendmailMTAClassMember, Description
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        verbose_name="className",
+        help_text="Class name identifier",
+    )
+    sendmail_mta_class_name = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name="sendmailMTAClassName",
+        help_text="Unique class name for routing",
+    )
+    sendmail_mta_class_member = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="sendmailMTAClassMember",
+        help_text="Class members (hosts or patterns)",
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Description of this MTA class",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_SENDMAIL + "," + settings.LDAP_BASE_DN
+    object_classes = ["sendmailMTAClass"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'sendmail_mta_class_name': 'sendmailMTAClassName',
+        'sendmail_mta_class_member': 'sendmailMTAClassMember',
+        'description': 'description',
+    }
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_sendmail_mta_class"
+        verbose_name = "Sendmail MTA Class"
+        verbose_name_plural = "Sendmail MTA Classes"
+
+    def __str__(self) -> str:
+        return self.sendmail_mta_class_name
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this MTA class."""
+        from ..utils.dn import build_ou
+
+        base = build_ou(settings.LDAP_OU_SENDMAIL)
+        return f"cn={self.cn},{base}"
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class SendmailMTAAlias(LDAPModel):
+    """Sendmail MTA alias configuration.
+
+    Based on sendmail.schema sendmailMTAAlias.
+    AUXILIARY object class.
+
+    MUST: cn, mail
+    MAY: Description
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        verbose_name="aliasName",
+        help_text="Alias name identifier",
+    )
+    mail = models.EmailField(
+        max_length=255,
+        verbose_name="mail",
+        help_text="Email address(es) for this alias",
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Description of this MTA alias",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_SENDMAIL + "," + settings.LDAP_BASE_DN
+    object_classes = ["sendmailMTAAlias"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'mail': 'mail',
+        'description': 'description',
+    }
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_sendmail_mta_alias"
+        verbose_name = "Sendmail MTA Alias"
+        verbose_name_plural = "Sendmail MTA Aliases"
+
+    def __str__(self) -> str:
+        return self.cn
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this MTA alias."""
+        from ..utils.dn import build_ou
+
+        base = build_ou(settings.LDAP_OU_SENDMAIL)
+        return f"cn={self.cn},{base}"
 
     @classmethod
     def get_object_classes(cls) -> List[str]:

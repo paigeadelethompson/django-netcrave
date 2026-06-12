@@ -569,6 +569,169 @@ class PosixGroup(LDAPModel):
     }
 
 
+class ShadowAccount(LDAPModel):
+    """Shadow password account model.
+
+    Based on shadowAccount from nis.schema.
+    AUXILIARY object class.
+
+    MUST: uid
+    MAY: userPassword, shadowLastChange, shadowMin,
+         shadowMax, shadowWarning, shadowInactive,
+         shadowExpire, shadowFlag, description
+    """
+
+    # Core attribute - uid is required
+    uid = models.CharField(
+        max_length=255,
+        unique=True,
+        help_text="User ID (uid)",
+    )
+
+    # Optional shadow attributes
+    user_password = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="userPassword",
+        help_text="User password hash",
+    )
+    shadow_last_change = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Days since Jan 1, 1970 password was last changed",
+    )
+    shadow_min = models.IntegerField(
+        default=0,
+        help_text="Minimum days between password changes",
+    )
+    shadow_max = models.IntegerField(
+        default=99999,
+        help_text="Maximum days between password changes",
+    )
+    shadow_warning = models.IntegerField(
+        default=7,
+        help_text="Days before password expires to warn user",
+    )
+    shadow_inactive = models.IntegerField(
+        default=-1,
+        help_text="Days after password expires until account is disabled",
+    )
+    shadow_expire = models.IntegerField(
+        default=-1,
+        help_text="Days since Jan 1, 1970 when account expires",
+    )
+    shadow_flag = models.PositiveIntegerField(
+        default=0,
+        help_text="Reserved for future use (always 0)",
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Description of this account",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_USERS + "," + settings.LDAP_BASE_DN
+    object_classes = ["shadowAccount"]
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = "ldap_shadow_accounts"
+        verbose_name = "Shadow Account"
+        verbose_name_plural = "Shadow Accounts"
+
+    def __str__(self) -> str:
+        return self.uid
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this shadow account."""
+        from ..utils.dn import build_user_dn
+
+        return build_user_dn(self.uid)
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
+class GroupOfUniqueNames(LDAPModel):
+    """Group model with uniqueMember attribute.
+
+    Based on groupOfUniqueNames from core.schema.
+    STRUCTURAL object class.
+
+    MUST: cn, uniqueMember
+    MAY: businessCategory, seeAlso, owner, ou, o, description
+    """
+
+    cn = models.CharField(
+        max_length=255,
+        verbose_name="groupName",
+        help_text="Group name (cn)",
+    )
+    unique_members = models.JSONField(
+        blank=True,
+        default=list,
+        verbose_name="uniqueMember",
+        help_text="List of unique member DNs",
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Group description",
+    )
+    ou = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="organizationalUnit",
+        help_text="Organizational unit",
+    )
+    o = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="organization",
+        help_text="Organization name",
+    )
+
+    ldap_base_dn = settings.LDAP_OU_GROUPS + "," + settings.LDAP_BASE_DN
+    object_classes = ["groupOfUniqueNames"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'unique_members': 'uniqueMember',
+        'description': 'description',
+        'ou': 'ou',
+        'o': 'o',
+    }
+
+    objects = LDAPManager()
+
+    class Meta:
+        db_table = "ldap_group_of_unique_names"
+        verbose_name = "Group of Unique Names"
+        verbose_name_plural = "Groups of Unique Names"
+
+    def __str__(self) -> str:
+        return self.cn
+
+    @property
+    def dn(self) -> str:
+        """Get the DN for this group."""
+        from ..utils.dn import build_group_dn
+
+        return build_group_dn(self.cn)
+
+    @classmethod
+    def get_object_classes(cls) -> List[str]:
+        """Get object classes for this model."""
+        return cls.object_classes.copy()
+
+
 class GroupOfNames(LDAPModel):
     """General group model with DN-based membership.
 

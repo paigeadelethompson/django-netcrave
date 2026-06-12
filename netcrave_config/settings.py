@@ -104,7 +104,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # LDAP Base DNs for each subtree
 # Django will automatically construct full DNs based on these
 LDAP_BASE_DN = os.environ.get("LDAP_BASE_DN", "dc=example,dc=com")
-
+LDAP_OU_ROLES = os.environ.get("LDAP_OU_ROLES", "ou=roles")
+LDAP_OU_APPLICATIONS = os.environ.get("LDAP_OU_APPLICATIONS", "ou=applications")
+LDAP_OU_RESOURCES = os.environ.get("LDAP_OU_RESOURCES", "ou=resources")
+LDAP_OU_DSAS = os.environ.get("LDAP_OU_DSAS", "ou=dsas")
+LDAP_OU_CA = os.environ.get("LDAP_OU_CA", "ou=ca")
 LDAP_OU_USERS = os.environ.get("LDAP_OU_USERS", "ou=users")
 LDAP_OU_GROUPS = os.environ.get("LDAP_OU_GROUPS", "ou=groups")
 LDAP_OU_COMPUTERS = os.environ.get("LDAP_OU_COMPUTERS", "ou=computers")
@@ -114,6 +118,11 @@ LDAP_OU_RADIUS = os.environ.get("LDAP_OU_RADIUS", "ou=radius")
 LDAP_OU_KRB = os.environ.get("LDAP_OU_KRB", "ou=kerberos")
 LDAP_OU_SENDMAIL = os.environ.get("LDAP_OU_SENDMAIL", "ou=sendmail")
 LDAP_OU_POSTFIX = os.environ.get("LDAP_OU_POSTFIX", "ou=postfix")
+LDAP_OU_DKIM = os.environ.get("LDAP_OU_DKIM", "ou=dkim")
+LDAP_OU_SERVICES = os.environ.get("LDAP_OU_SERVICES", "ou=services")
+LDAP_OU_CERTIFICATES = os.environ.get("LDAP_OU_CERTIFICATES", "ou=certificates")
+LDAP_OU_CORBA = os.environ.get("LDAP_OU_CORBA", "ou=corba")
+LDAP_OU_JAVA = os.environ.get("LDAP_OU_JAVA", "ou=java")
 
 # Auto-increment counter configuration
 LDAP_COUNTER_BASE_DN = f"cn=counters,{LDAP_BASE_DN}"
@@ -188,6 +197,13 @@ LDAP_SEARCH_SUGGESTION_LIMIT = int(os.environ.get("LDAP_SEARCH_SUGGESTION_LIMIT"
 SCHEMA_VALIDATION_ENABLED = os.environ.get(
     "SCHEMA_VALIDATION_ENABLED", "true"
 ).lower() == "true"
+
+# NIS settings 
+LDAP_OU_NIS = os.environ.get("LDAP_OU_NIS", "ou=nis")
+LDAP_OU_HOSTS = os.environ.get("LDAP_OU_HOSTS", "ou=hosts")
+LDAP_OU_NETGROUPS = os.environ.get("LDAP_OU_NETGROUPS", "ou=netgroups")
+LDAP_OU_DEVICES = os.environ.get("LDAP_OU_DEVICES", "ou=devices")
+LDAP_OU_PEOPLE = os.environ.get("LDAP_OU_PEOPLE", "ou=people")
 
 # ACME settings
 ACME_BASE_URL = os.environ.get("ACME_BASE_URL", "/ca/acme/")
