@@ -8,21 +8,13 @@ This module provides:
 - GroupOfNames: General group model with DN-based membership
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from django.conf import settings
 from django.db import models
 
 from .base import LDAPCounter, LDAPManager, LDAPModel
 from netcrave_settings.utils import defaults
-
-# Import decorator for automatic LDAP attribute generation
-try:
-    from netcrave_ldapdb.backends.decorators import ldap_auto_attrs
-except ImportError:
-    # Fallback - create a no-op decorator
-    def ldap_auto_attrs(cls):
-        return cls
 
 
 class PosixAccountMixin(models.Model):
@@ -107,7 +99,6 @@ class PosixAccountMixin(models.Model):
         super().save(*args, **kwargs)
 
 
-@ldap_auto_attrs
 class InetOrgPerson(LDAPModel):
     """Primary user model combining inetOrgPerson with auxiliary classes.
 
@@ -457,8 +448,51 @@ class InetOrgPerson(LDAPModel):
 
         super().save(*args, **kwargs)
 
+    ldap_attributes_map: Dict[str, str] = {
+        'uid': 'uid',
+        'cn': 'cn',
+        'sn': 'sn',
+        'given_name': 'givenName',
+        'display_name': 'displayName',
+        'mail': 'mail',
+        'title': 'title',
+        'ou': 'ou',
+        'department_number': 'departmentNumber',
+        'employee_number': 'employeeNumber',
+        'employee_type': 'employeeType',
+        'telephone_number': 'telephoneNumber',
+        'mobile': 'mobile',
+        'home_phone': 'homePhone',
+        'pager': 'pager',
+        'facsimile_telephone_number': 'facsimileTelephoneNumber',
+        'uid_number': 'uidNumber',
+        'gid_number': 'gidNumber',
+        'login_shell': 'loginShell',
+        'gecos': 'gecos',
+        'home_directory': 'homeDirectory',
+        'shadow_last_change': 'shadowLastChange',
+        'shadow_min': 'shadowMin',
+        'shadow_max': 'shadowMax',
+        'shadow_warning': 'shadowWarning',
+        'shadow_inactive': 'shadowInactive',
+        'shadow_expire': 'shadowExpire',
+        'shadow_flag': 'shadowFlag',
+        'krb_principal_name': 'krbPrincipalName',
+        'krb_canonical_name': 'krbCanonicalName',
+        'krb_password_expiration': 'krbPasswordExpiration',
+        'krb_principal_expiration': 'krbPrincipalExpiration',
+        'krb_pwd_policy_reference': 'krbPwdPolicyReference',
+        'krb_ticket_policy_reference': 'krbTicketPolicyReference',
+        'krb_up_enabled': 'krbUPEnabled',
+        'krb_last_successful_auth': 'krbLastSuccessfulAuth',
+        'krb_last_failed_auth': 'krbLastFailedAuth',
+        'krb_login_failed_count': 'krbLoginFailedCount',
+        'krb_ticket_flags': 'krbTicketFlags',
+        'krb_max_ticket_life': 'krbMaxTicketLife',
+        'krb_max_renewable_age': 'krbMaxRenewableAge',
+    }
 
-@ldap_auto_attrs
+
 class PosixGroup(LDAPModel):
     """POSIX group model.
 
@@ -494,6 +528,12 @@ class PosixGroup(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_GROUPS + "," + settings.LDAP_BASE_DN
     object_classes = ["posixGroup"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'gid_number': 'gidNumber',
+        'member_uid': 'memberUid',
+    }
+
     objects = LDAPManager()
 
     class Meta:
@@ -522,8 +562,13 @@ class PosixGroup(LDAPModel):
             self.gid_number = LDAPCounter.objects.get_next_gid_number()
         super().save(*args, **kwargs)
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'gid_number': 'gidNumber',
+        'member_uid': 'memberUid',
+    }
 
-@ldap_auto_attrs
+
 class GroupOfNames(LDAPModel):
     """General group model with DN-based membership.
 
@@ -566,6 +611,14 @@ class GroupOfNames(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_GROUPS + "," + settings.LDAP_BASE_DN
     object_classes = ["groupOfNames"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'members': 'member',
+        'description': 'description',
+        'ou': 'ou',
+        'o': 'o',
+    }
 
     objects = LDAPManager()
 

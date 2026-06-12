@@ -45,6 +45,13 @@ class NisObject(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_GROUPS + "," + settings.LDAP_BASE_DN
     object_classes = ["nisObject"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'nis_map_name': 'nisMapName',
+        'nis_map_entry': 'nisMapEntry',
+        'description': 'description',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -58,7 +65,6 @@ class NisObject(LDAPModel):
     @property
     def dn(self) -> str:
         """Get the DN for this NIS object."""
-        # Use cn as RDN, place under groups OU
         from ..utils.dn import build_ou
 
         base = build_ou(settings.LDAP_OU_GROUPS)

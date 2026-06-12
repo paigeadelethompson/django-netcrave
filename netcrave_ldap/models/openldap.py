@@ -15,6 +15,11 @@ from .base import LDAPModel
 
 
 class Computer(LDAPModel):
+    mac_address='macAddress',
+    description='description',
+    ou='ou',
+)
+class Computer(LDAPModel):
     """Computer/device model combining device and ipHost.
 
     Object Classes:
@@ -65,6 +70,14 @@ class Computer(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_COMPUTERS + "," + settings.LDAP_BASE_DN
     object_classes = ["device", "ipHost", "ieee802Device"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'ip_host_number': 'ipHostNumber',
+        'mac_address': 'macAddress',
+        'description': 'description',
+        'ou': 'ou',
+    }
 
     objects = models.Manager()
 
@@ -166,6 +179,17 @@ class RadiusClient(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_RADIUS + "," + settings.LDAP_BASE_DN
     object_classes = ["radiusObjectProfile"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'radius_client_secret': 'radiusClientSecret',
+        'radius_client_shortname': 'radiusClientShortname',
+        'radius_client_type': 'radiusClientType',
+        'radius_client_comment': 'radiusClientComment',
+        'radius_client_virtual_server': 'radiusClientVirtualServer',
+        'description': 'description',
+        'ou': 'ou',
+    }
 
     objects = models.Manager()
 

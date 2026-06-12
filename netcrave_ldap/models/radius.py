@@ -181,6 +181,29 @@ class RadiusProfile(LDAPModel):
     ldap_base_dn = ""
     object_classes = ["radiusprofile"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'radius_auth_type': 'radiusAuthType',
+        'radius_password_retry': 'radiusPasswordRetry',
+        'radius_service_type': 'radiusServiceType',
+        'radius_framed_ip_address': 'radiusFramedIPAddress',
+        'radius_framed_ip_netmask': 'radiusFramedIPNetmask',
+        'radius_framed_mtu': 'radiusFramedMTU',
+        'radius_framed_protocol': 'radiusFramedProtocol',
+        'radius_framed_routing': 'radiusFramedRouting',
+        'radius_session_timeout': 'radiusSessionTimeout',
+        'radius_idle_timeout': 'radiusIdleTimeout',
+        'radius_simultaneous_use': 'radiusSimultaneousUse',
+        'radius_class': 'radiusClass',
+        'radius_calling_station_id': 'radiusCallingStationId',
+        'radius_filter_id': 'radiusFilterId',
+        'radius_callback_number': 'radiusCallbackNumber',
+        'radius_callback_id': 'radiusCallbackId',
+        'radius_framed_compression': 'radiusFramedCompression',
+        'radius_framed_route': 'radiusFramedRoute',
+        'radius_nas_ip_address': 'radiusNASIPAddress',
+        'radius_nas_identifier': 'radiusNASIdentifier',
+    }
+
     objects = models.Manager()
 
     class Meta:

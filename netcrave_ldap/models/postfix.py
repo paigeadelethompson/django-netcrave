@@ -36,6 +36,12 @@ class PostfixAlias(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_POSTFIX + "," + settings.LDAP_BASE_DN
     object_classes = ["top"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'mail': 'mail',
+        'destination': 'mailAliasDestination',
+        'description': 'description',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -98,6 +104,13 @@ class PostfixTransport(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_POSTFIX + "," + settings.LDAP_BASE_DN
     object_classes = ["top"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'mail_routing_domain': 'mailRoutingDomain',
+        'transport_type': 'transportType',
+        'transport_next_hop': 'transportNextHop',
+        'description': 'description',
+    }
 
     objects = models.Manager()
 

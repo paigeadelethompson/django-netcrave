@@ -51,6 +51,13 @@ class SendmailMTA(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_SENDMAIL + "," + settings.LDAP_BASE_DN
     object_classes = ["sendmailMTA"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'sendmail_mta_cluster': 'sendmailMTACluster',
+        'sendmail_mta_host': 'sendmailMTAHost',
+        'description': 'description',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -135,6 +142,14 @@ class SendmailMapEntry(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_SENDMAIL + "," + settings.LDAP_BASE_DN
     object_classes = ["sendmailMTAMapObject"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'sendmail_mta_map_name': 'sendmailMTAMapName',
+        'sendmail_mta_key': 'sendmailMTAKey',
+        'sendmail_mta_map_value': 'sendmailMTAMapValue',
+        'sendmail_mta_map_search': 'sendmailMTAMapSearch',
+    }
 
     objects = models.Manager()
 

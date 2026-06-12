@@ -101,7 +101,7 @@ class LDAPModel(models.Model):
     Subclasses should define:
     - ldap_base_dn: Base DN for this model type
     - object_classes: List of required LDAP object classes
-    - ldap_attributes_map: Mapping from Django fields to LDAP attributes
+    - ldap_attributes_map: Mapping from Django fields to LDAP attributes (required)
     """
 
     # Base distinguished name (can be overridden per model)
@@ -113,8 +113,8 @@ class LDAPModel(models.Model):
     # Attributes that are part of the primary key in LDAP
     ldap_pk_attributes: List[str] = []
 
-    # Mapping from Django field names to LDAP attribute names
-    ldap_attributes_map: Dict[str, str] = {}
+    # Mapping from Django field names to LDAP attribute names (REQUIRED)
+    ldap_attributes_map: Dict[str, str]
 
     class Meta:
         abstract = True
@@ -151,10 +151,24 @@ class LDAPModel(models.Model):
     def get_ldap_attributes(self) -> Dict[str, Any]:
         """Get a dictionary of LDAP attributes for this entry.
 
-        This method should be overridden by subclasses to provide
-        the mapping from Django fields to LDAP attributes.
+        Uses the ldap_attributes_map class property to map Django field names
+        to LDAP attribute names. The mapping is explicit (no conversion).
         """
-        return {}
+        attrs: Dict[str, Any] = {
+            "objectClass": list(self.get_object_classes()),
+        }
+
+        # Use the model's ldap_attributes_map for field-to-attribute conversion
+        for field_name, ldap_attr in self.ldap_attributes_map.items():
+            value = getattr(self, field_name, None)
+            if value is not None:
+                # Handle list/JSONField values
+                if isinstance(value, (list, tuple)):
+                    attrs[ldap_attr] = list(value)
+                else:
+                    attrs[ldap_attr] = [str(value)]
+
+        return attrs
 
     @classmethod
     def normalize_dn(cls, dn: str) -> str:

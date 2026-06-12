@@ -65,6 +65,15 @@ class AsteriskExtension(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_AST + "," + settings.LDAP_BASE_DN
     object_classes = ["AsteriskExtension"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'ast_context': 'AstContext',
+        'ast_extension': 'AstExtension',
+        'ast_priority': 'AstPriority',
+        'ast_application': 'AstApplication',
+        'ast_application_data': 'AstApplicationData',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -214,6 +223,27 @@ class AsteriskIAXUser(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_AST + "," + settings.LDAP_BASE_DN
     object_classes = ["AsteriskExtension", "AsteriskIAXUser"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'ast_context': 'AstContext',
+        'ast_extension': 'AstExtension',
+        'ast_priority': 'AstPriority',
+        'ast_application': 'AstApplication',
+        'ast_application_data': 'AstApplicationData',
+        'ast_account_name': 'AstAccountName',
+        'ast_md5_secret': 'AstMD5secret',
+        'ast_account_host': 'AstAccountHost',
+        'ast_port': 'AstPort',
+        'ast_username': 'AstUsername',
+        'ast_auth_type': 'AstAuthType',
+        'ast_account_type': 'AstAccountType',
+        'ast_account_caller_id': 'AstAccountCallerID',
+        'ast_account_disallowed_codec': 'AstAccountDisallowedCodec',
+        'ast_account_allowed_codec': 'AstAccountAllowedCodec',
+        'ast_account_transport': 'AstAccountTransport',
+        'ast_account_nat': 'AstAccountNAT',
+    }
 
     objects = models.Manager()
 
@@ -389,6 +419,33 @@ class AsteriskSIPUser(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_AST + "," + settings.LDAP_BASE_DN
     object_classes = ["AsteriskExtension", "AsteriskSIPUser"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'ast_context': 'AstContext',
+        'ast_extension': 'AstExtension',
+        'ast_priority': 'AstPriority',
+        'ast_application': 'AstApplication',
+        'ast_application_data': 'AstApplicationData',
+        'ast_account_name': 'AstAccountName',
+        'ast_account_secret': 'AstAccountSecret',
+        'ast_account_nat': 'AstAccountNAT',
+        'ast_account_transport': 'AstAccountTransport',
+        'ast_account_call_limit': 'AstAccountCallLimit',
+        'ast_codecs': 'AstCodecs',
+        'ast_allow': 'AstAllow',
+        'ast_direct_media': 'AstDirectMedia',
+        'ast_account_video_support': 'AstAccountVideoSupport',
+        'ast_account_language': 'AstAccountLanguage',
+        'ast_transport': 'Transport',
+        'ast_allow_overlap': 'AllowOverlapDialing',
+        'ast_account_disallowed_codec': 'DisallowedCodec',
+        'ast_account_allowed_codec': 'AllowedCodec',
+        'ast_account_call_group': 'CallGroup',
+        'ast_account_pickup_group': 'PickupGroup',
+        'ast_account_music_on_hold': 'MusicOnHoldClass',
+        'ast_account_can_call_forward': 'CanCallForward',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -478,6 +535,18 @@ class AsteriskVoiceMail(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_AST + "," + settings.LDAP_BASE_DN
     object_classes = ["AsteriskExtension", "AsteriskVoiceMail"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'ast_context': 'AstContext',
+        'ast_voicemail_mailbox': 'AstVoicemailMailbox',
+        'ast_voicemail_password': 'AstVoicemailPassword',
+        'ast_voicemail_fullname': 'AstVoicemailFullname',
+        'ast_voicemail_email': 'AstVoicemailEmail',
+        'ast_voicemail_pager': 'AstVoicemailPager',
+        'ast_voicemail_options': 'AstVoicemailOptions',
+        'ast_voicemail_context': 'AstVoicemailContext',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -551,6 +620,15 @@ class AsteriskConfig(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_AST + "," + settings.LDAP_BASE_DN
     object_classes = ["AsteriskExtension", "AsteriskConfig"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'ast_config_filename': 'AstConfigFilename',
+        'ast_config_category': 'AstConfigCategory',
+        'ast_config_variable_name': 'AstConfigVariableName',
+        'ast_config_variable_value': 'AstConfigVariableValue',
+        'ast_config_commented': 'AstConfigCommented',
+    }
 
     objects = models.Manager()
 

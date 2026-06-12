@@ -102,6 +102,21 @@ class PDNSDomain(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_DNS + "," + settings.LDAP_BASE_DN
     object_classes = ["dNSDomain2"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'dc': 'dc',
+        'dnsttl': 'dNSTTL',
+        'dnsclass': 'dNSClass',
+        'pdns_domain_type': 'pdnsDomainType',
+        'master_ips': 'masterIPs',
+        'soa_record': 'soaRecord',
+        'ns_records': 'nsRecords',
+        'soa_serial': 'soaSerial',
+        'soa_refresh': 'soaRefresh',
+        'soa_retry': 'soaRetry',
+        'soa_expiry': 'soaExpiry',
+        'soa_minimum': 'soaMinimum',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -344,6 +359,27 @@ class PDNSRecord(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_DNS + "," + settings.LDAP_BASE_DN
     object_classes = ["dNSDomain2"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'dc': 'dc',
+        'dnsttl': 'dNSTTL',
+        'record_type': 'pDNSType',
+        'value': 'pDNSValue',
+        'priority': 'priority',
+        'weight': 'weight',
+        'port': 'port',
+        'flags': 'flags',
+        'protocol': 'protocol',
+        'algorithm': 'algorithm',
+        'public_key': 'publicKey',
+        'key_tag': 'keyTag',
+        'digest_type': 'digestType',
+        'digest': 'digest',
+        'signature': 'signature',
+        'type_covered': 'typeCovered',
+        'notes': 'notes',
+        'active': 'active',
+    }
 
     objects = models.Manager()
 

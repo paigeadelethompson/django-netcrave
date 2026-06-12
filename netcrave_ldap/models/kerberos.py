@@ -106,6 +106,21 @@ class KrbRealmContainer(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
     object_classes = ["krbRealmContainer"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'krb_up_enabled': 'krbUPEnabled',
+        'krb_ldap_servers': 'krbLdapServers',
+        'krb_supported_enc_salt_types': 'krbSupportedEncSaltTypes',
+        'krb_default_enc_salt_types': 'krbDefaultEncSaltTypes',
+        'krb_ticket_policy_reference': 'krbTicketPolicyReference',
+        'krb_pwd_policy_reference': 'krbPwdPolicyReference',
+        'krb_kdc_servers': 'krbKdcServers',
+        'krb_pwd_servers': 'krbPwdServers',
+        'krb_adm_servers': 'krbAdmServers',
+        'krb_sub_trees': 'krbSubTrees',
+        'krb_search_scope': 'krbSearchScope',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -260,6 +275,26 @@ class KrbPrincipal(LDAPModel):
     ldap_base_dn = ""
     object_classes = ["krbPrincipal", "krbPrincipalAux"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'krb_principal_name': 'krbPrincipalName',
+        'krb_canonical_name': 'krbCanonicalName',
+        'krb_principal_type': 'krbPrincipalType',
+        'krb_up_enabled': 'krbUPEnabled',
+        'krb_principal_expiration': 'krbPrincipalExpiration',
+        'krb_password_expiration': 'krbPasswordExpiration',
+        'krb_login_failed_count': 'krbLoginFailedCount',
+        'krb_last_successful_auth': 'krbLastSuccessfulAuth',
+        'krb_last_failed_auth': 'krbLastFailedAuth',
+        'krb_ticket_policy_reference': 'krbTicketPolicyReference',
+        'krb_pwd_policy_reference': 'krbPwdPolicyReference',
+        'krb_ticket_flags': 'krbTicketFlags',
+        'krb_max_ticket_life': 'krbMaxTicketLife',
+        'krb_max_renewable_age': 'krbMaxRenewableAge',
+        'krb_allowed_to_delegate_to': 'krbAllowedToDelegateTo',
+        'krb_principal_auth_ind': 'krbPrincipalAuthInd',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -344,6 +379,17 @@ class KrbPwdPolicy(LDAPModel):
     ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
     object_classes = ["krbPwdPolicy"]
 
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'krb_max_pwd_life': 'krbMaxPwdLife',
+        'krb_min_pwd_life': 'krbMinPwdLife',
+        'krb_pwd_min_length': 'krbPwdMinLength',
+        'krb_pwd_max_failure': 'krbPwdMaxFailure',
+        'krb_pwd_lockout_duration': 'krbPwdLockoutDuration',
+        'krb_pwd_history_length': 'krbPwdHistoryLength',
+        'krb_pwd_min_diff_chars': 'krbPwdMinDiffChars',
+    }
+
     objects = models.Manager()
 
     class Meta:
@@ -401,6 +447,13 @@ class KrbTicketPolicy(LDAPModel):
 
     ldap_base_dn = settings.LDAP_OU_KRB + "," + settings.LDAP_BASE_DN
     object_classes = ["krbTicketPolicy"]
+
+    ldap_attributes_map: Dict[str, str] = {
+        'cn': 'cn',
+        'krb_max_ticket_life': 'krbMaxTicketLife',
+        'krb_max_renewable_age': 'krbMaxRenewableAge',
+        'krb_ticket_flags': 'krbTicketFlags',
+    }
 
     objects = models.Manager()
 
