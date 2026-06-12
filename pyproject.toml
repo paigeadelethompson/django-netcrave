@@ -17,6 +17,9 @@ packages = [
 python = "^3.9"
 django = "^4.2"
 python-ldap = { path = "3rdparty/python-ldap" }
+pyasn1 = "^0.6.0"
+cryptography = "^42.0.0"
+celery = "^5.3.0"
 
 [tool.poetry.scripts]
 netcrave = "netcrave.cli:main"

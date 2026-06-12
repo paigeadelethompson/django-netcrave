@@ -30,6 +30,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "netcrave_settings",
     "netcrave_ldap",
+    "netcrave_ca",
+    "netcrave_icap",
 ]
 
 MIDDLEWARE = [
@@ -42,7 +44,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "netcrave_ldap.urls"
+ROOT_URLCONF = "netcrave.urls"
 
 TEMPLATES = [
     {
@@ -60,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "netcrave_ldap.wsgi.application"
+ASGI_APPLICATION = "netcrave.asgi.application"
 
 # Database
 DATABASES = {
@@ -182,3 +184,38 @@ LDAP_SEARCH_SUGGESTION_LIMIT = int(os.environ.get("LDAP_SEARCH_SUGGESTION_LIMIT"
 SCHEMA_VALIDATION_ENABLED = os.environ.get(
     "SCHEMA_VALIDATION_ENABLED", "true"
 ).lower() == "true"
+
+# ACME settings
+ACME_BASE_URL = os.environ.get("ACME_BASE_URL", "/ca/acme/")
+LDAP_OU_ACME = os.environ.get("LDAP_OU_ACME", "ou=acme")
+
+# ICAP settings
+LDAP_OU_ICAP = os.environ.get("LDAP_OU_ICAP", "ou=icap")
+ICAP_SERVER_HOST = os.environ.get("ICAP_SERVER_HOST", "127.0.0.1")
+ICAP_SERVER_PORT = int(os.environ.get("ICAP_SERVER_PORT", 1344))
+ICAP_SERVICE_NAME = os.environ.get("ICAP_SERVICE_NAME", "Netcrave-ICAP/1.0")
+
+# Kerberos Configuration for ICAP
+KRB_ICAP_SERVICE_PRINCIPAL = os.environ.get(
+    "KRB_ICAP_SERVICE_PRINCIPAL", "HTTP/squid.example.com@EXAMPLE.COM"
+)
+KRB_ICAP_KEYTAB = os.environ.get("KRB_ICAP_KEYTAB", "/etc/krb5.keytab")
+
+# Celery Configuration
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL", "redis://localhost:6379/0"
+)
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND", "redis://localhost:6379/1"
+)
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TIMEZONE = "UTC"
+CELERY_ENABLE_UTC = True
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
+CELERY_WORKER_CONCURRENCY = 4
+
+# ICAP Logging
+ICAP_LOG_RETENTION_DAYS = int(os.environ.get("ICAP_LOG_RETENTION_DAYS", 90))

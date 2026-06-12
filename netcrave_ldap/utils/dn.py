@@ -142,6 +142,21 @@ def build_krb_principal_dn(principal_name: str, realm_dn: Optional[str] = None) 
     return f"krbPrincipalName={principal},{realm_dn}"
 
 
+def build_icap_dn(service_name: str, ou: Optional[str] = None) -> str:
+    """Build an ICAP service DN.
+
+    Args:
+        service_name: The ICAP service name (CN)
+        ou: OU to use. Defaults to settings.LDAP_OU_ICAP
+
+    Returns:
+        Full DN string
+    """
+    if ou is None:
+        ou = getattr(settings, "LDAP_OU_ICAP", "ou=icap")
+    return f"cn={service_name},{build_ou(ou)}"
+
+
 def build_sendmail_dn(map_name: str, ou: Optional[str] = None) -> str:
     """Build a Sendmail map DN.
 
