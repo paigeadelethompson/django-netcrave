@@ -9,7 +9,7 @@ from ..models.opendkim import DKIM
 class DKIMAdmin(admin.ModelAdmin):
     """Admin for DKIM selector and key entries."""
 
-    list_display = ("cn", "dkim_selector", "dkim_domain", "description")
+    list_display = ("cn", "dkim_selector", "dkim_domain")
     search_fields = ("cn", "dkim_selector", "dkim_domain")
     list_filter = ()
 

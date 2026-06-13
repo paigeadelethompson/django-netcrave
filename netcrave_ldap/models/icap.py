@@ -34,90 +34,90 @@ class IcapService(LDAPModel):
         verbose_name="serviceName",
         help_text="ICAP service name (cn)",
     )
-    icap_service_host = models.CharField(
+    iap_service_host = models.CharField(
         max_length=255,
         verbose_name="icapServiceHost",
         help_text="Host address of the ICAP service",
     )
-    icap_service_port = models.PositiveIntegerField(
+    iap_service_port = models.PositiveIntegerField(
         verbose_name="icapServicePort",
         help_text="Port number of the ICAP service",
     )
-    icap_service_name = models.CharField(
+    iap_service_name = models.CharField(
         max_length=255,
         blank=True,
         null=True,
         verbose_name="icapServiceName",
         help_text="Name of the ICAP service",
     )
-    icap_max_body_size = models.PositiveIntegerField(
+    iap_max_body_size = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name="icapMaxBodySize",
         help_text="Maximum body size supported by ICAP service",
     )
-    icap_preview_size = models.PositiveIntegerField(
+    iap_preview_size = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name="icapPreviewSize",
         help_text="Preview size for request modification",
     )
-    icap_methods_supported = models.JSONField(
+    iap_methods_supported = models.JSONField(
         blank=True,
         default=list,
         verbose_name="icapMethodsSupported",
         help_text="List of supported ICAP methods",
     )
-    icap_authentication_type = models.CharField(
+    iap_authentication_type = models.CharField(
         max_length=50,
         blank=True,
         null=True,
         verbose_name="icapAuthenticationType",
         help_text="Authentication type required by ICAP service",
     )
-    icap_kerberos_service_principal = models.CharField(
+    iap_kerberos_service_principal = models.CharField(
         max_length=255,
         blank=True,
         null=True,
         verbose_name="icapKerberosServicePrincipal",
         help_text="Kerberos service principal for ICAP authentication",
     )
-    icap_kerberos_keytab = models.CharField(
+    iap_kerberos_keytab = models.CharField(
         max_length=255,
         blank=True,
         null=True,
         verbose_name="icapKerberosKeytab",
         help_text="Path to Kerberos keytab file",
     )
-    icap_allow_anonymous = models.BooleanField(
+    iap_allow_anonymous = models.BooleanField(
         default=False,
         verbose_name="icapAllowAnonymous",
         help_text="Whether anonymous ICAP access is allowed",
     )
-    icap_max_connections = models.PositiveIntegerField(
+    iap_max_connections = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name="icapMaxConnections",
         help_text="Maximum concurrent connections allowed",
     )
-    icap_transfer_complete = models.BooleanField(
+    iap_transfer_complete = models.BooleanField(
         default=False,
         verbose_name="icapTransferComplete",
         help_text="Whether complete transfer is required",
     )
-    icap_request_headers = models.JSONField(
+    iap_request_headers = models.JSONField(
         blank=True,
         default=list,
         verbose_name="icapRequestHeaders",
         help_text="Request headers to pass to ICAP service",
     )
-    icap_response_headers = models.JSONField(
+    iap_response_headers = models.JSONField(
         blank=True,
         default=list,
         verbose_name="icapResponseHeaders",
         help_text="Response headers to pass from ICAP service",
     )
-    icap_allow_headers = models.JSONField(
+    iap_allow_headers = models.JSONField(
         blank=True,
         default=list,
         verbose_name="icapAllowHeaders",
@@ -134,28 +134,28 @@ class IcapService(LDAPModel):
 
     ldap_attributes_map: Dict[str, str] = {
         'cn': 'cn',
-        'icap_service_host': 'icapServiceHost',
-        'icap_service_port': 'icapServicePort',
-        'icap_service_name': 'icapServiceName',
-        'icap_max_body_size': 'icapMaxBodySize',
-        'icap_preview_size': 'icapPreviewSize',
-        'icap_methods_supported': 'icapMethodsSupported',
-        'icap_authentication_type': 'icapAuthenticationType',
-        'icap_kerberos_service_principal': 'icapKerberosServicePrincipal',
-        'icap_kerberos_keytab': 'icapKerberosKeytab',
-        'icap_allow_anonymous': 'icapAllowAnonymous',
-        'icap_max_connections': 'icapMaxConnections',
-        'icap_transfer_complete': 'icapTransferComplete',
-        'icap_request_headers': 'icapRequestHeaders',
-        'icap_response_headers': 'iapResponseHeaders',
-        'icap_allow_headers': 'iapAllowHeaders',
+        'iap_service_host': 'icapServiceHost',
+        'iap_service_port': 'icapServicePort',
+        'iap_service_name': 'icapServiceName',
+        'iap_max_body_size': 'icapMaxBodySize',
+        'iap_preview_size': 'icapPreviewSize',
+        'iap_methods_supported': 'icapMethodsSupported',
+        'iap_authentication_type': 'icapAuthenticationType',
+        'iap_kerberos_service_principal': 'icapKerberosServicePrincipal',
+        'iap_kerberos_keytab': 'icapKerberosKeytab',
+        'iap_allow_anonymous': 'icapAllowAnonymous',
+        'iap_max_connections': 'icapMaxConnections',
+        'iap_transfer_complete': 'icapTransferComplete',
+        'iap_request_headers': 'icapRequestHeaders',
+        'iap_response_headers': 'iapResponseHeaders',
+        'iap_allow_headers': 'iapAllowHeaders',
         'description': 'description',
     }
 
     objects = models.Manager()
 
     class Meta:
-        db_table = "ldap_icap_service"
+        db_table = "ldap_iap_service"
         verbose_name = "ICAP Service"
         verbose_name_plural = "ICAP Services"
 
@@ -193,15 +193,15 @@ class IcapUser(LDAPModel):
         verbose_name="userName",
         help_text="User name (cn) for ICAP access control",
     )
-    icap_allow_icap_access = models.BooleanField(
+    iap_allow_iap_access = models.BooleanField(
         default=True,
-        verbose_name="icapAllowICAPAccess",
+        verbose_name="iapAllowICAPAccess",
         help_text="Whether a user is allowed to use ICAP service",
     )
-    icap_max_connections_per_user = models.PositiveIntegerField(
+    iap_max_connections_per_user = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name="icapMaxConnectionsPerUser",
+        verbose_name="iapMaxConnectionsPerUser",
         help_text="Maximum concurrent connections for a specific user",
     )
 
@@ -210,14 +210,14 @@ class IcapUser(LDAPModel):
 
     ldap_attributes_map: Dict[str, str] = {
         'cn': 'cn',
-        'icap_allow_icap_access': 'iapAllowICAPAccess',
-        'icap_max_connections_per_user': 'iapMaxConnectionsPerUser',
+        'iap_allow_iap_access': 'iapAllowICAPAccess',
+        'iap_max_connections_per_user': 'iapMaxConnectionsPerUser',
     }
 
     objects = models.Manager()
 
     class Meta:
-        db_table = "ldap_icap_user"
+        db_table = "ldap_iap_user"
         verbose_name = "ICAP User"
         verbose_name_plural = "ICAP Users"
 

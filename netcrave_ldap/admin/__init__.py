@@ -1,7 +1,7 @@
 """Admin configuration for netcrave LDAP models."""
 
 # Import all admin modules to register them
-from . import domains, powerdns, asterisk, openldap, radius, kerberos, sendmail, postfix, opendkim, ldapns, icap, certificate, corba, java
+from . import domains, powerdns, asterisk, openldap, radius, kerberos, sendmail, postfix, opendkim, ldapns, icap, certificate, corba, java, cosine
 
 # Re-export admin classes for convenience
 from .domains import InetOrgPersonAdmin, PosixGroupAdmin, GroupOfNamesAdmin
@@ -24,6 +24,19 @@ from .icap import IcapServiceAdmin, IcapUserAdmin
 from .certificate import CertificateTemplateAdmin, CertificateProfileAdmin, CertificateRecordAdmin, CertificateAuthorityAdmin
 from .corba import CorbaContainerAdmin, CorbaObjectAdmin, CorbaObjectReferenceAdmin
 from .java import JavaContainerAdmin, JavaObjectAdmin, JavaSerializedObjectAdmin, JavaMarshalledObjectAdmin, JavaNamingReferenceAdmin
+from .cosine import (
+    PilotObjectAdmin,
+    PilotPersonAdmin,
+    AccountAdmin,
+    DocumentAdmin,
+    RoomAdmin,
+    DomainAdmin,
+    DNSDomainAdmin,
+    DomainRelatedObjectAdmin,
+    FriendlyCountryAdmin,
+    SimpleSecurityObjectAdmin,
+    PilotOrganizationAdmin,
+)
 
 __all__ = [
     # Domain models
@@ -79,4 +92,16 @@ __all__ = [
     "JavaSerializedObjectAdmin",
     "JavaMarshalledObjectAdmin",
     "JavaNamingReferenceAdmin",
+    # COSINE (RFC1274)
+    "PilotObjectAdmin",
+    "PilotPersonAdmin",
+    "AccountAdmin",
+    "DocumentAdmin",
+    "RoomAdmin",
+    "DomainAdmin",
+    "DNSDomainAdmin",
+    "DomainRelatedObjectAdmin",
+    "FriendlyCountryAdmin",
+    "SimpleSecurityObjectAdmin",
+    "PilotOrganizationAdmin",
 ]

@@ -11,13 +11,13 @@ class IcapServiceAdmin(admin.ModelAdmin):
 
     list_display = (
         "cn",
-        "icap_service_host",
-        "icap_service_port",
-        "icap_max_body_size",
+        "iap_service_host",
+        "iap_service_port",
+        "iap_max_body_size",
         "description",
     )
-    search_fields = ("cn", "icap_service_host")
-    list_filter = ("icap_authentication_type",)
+    search_fields = ("cn", "iap_service_host")
+    list_filter = ("iap_authentication_type",)
 
     fieldsets = (
         (
@@ -25,7 +25,7 @@ class IcapServiceAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     ("cn",),
-                    "icap_service_name",
+                    "iap_service_name",
                 )
             },
         ),
@@ -33,8 +33,8 @@ class IcapServiceAdmin(admin.ModelAdmin):
             "Network",
             {
                 "fields": (
-                    ("icap_service_host",),
-                    ("icap_service_port",),
+                    ("iap_service_host",),
+                    ("iap_service_port",),
                 )
             },
         ),
@@ -42,7 +42,7 @@ class IcapServiceAdmin(admin.ModelAdmin):
             "Limits",
             {
                 "fields": (
-                    ("icap_max_body_size",),
+                    ("iap_max_body_size",),
                     ("iap_preview_size",),
                     ("iap_max_connections",),
                 )
@@ -93,11 +93,11 @@ class IcapUserAdmin(admin.ModelAdmin):
 
     list_display = (
         "cn",
-        "iap_allow_icap_access",
+        "iap_allow_iap_access",
         "iap_max_connections_per_user",
     )
     search_fields = ("cn",)
-    list_filter = ("iap_allow_icap_access",)
+    list_filter = ("iap_allow_iap_access",)
 
     fieldsets = (
         (
@@ -110,7 +110,7 @@ class IcapUserAdmin(admin.ModelAdmin):
             "Access Control",
             {
                 "fields": (
-                    ("iap_allow_icap_access",),
+                    ("iap_allow_iap_access",),
                     ("iap_max_connections_per_user",),
                 )
             },

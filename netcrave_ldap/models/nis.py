@@ -183,9 +183,9 @@ class NisPosixGroup(LDAPModel):
     objects = models.Manager()
 
     class Meta:
-        db_table = "ldap_posix_groups"
-        verbose_name = "POSIX Group"
-        verbose_name_plural = "POSIX Groups"
+        db_table = "ldap_nis_posix_groups"
+        verbose_name = "NIS POSIX Group"
+        verbose_name_plural = "NIS POSIX Groups"
 
     def __str__(self) -> str:
         return self.cn

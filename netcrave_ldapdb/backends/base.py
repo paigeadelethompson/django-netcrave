@@ -507,6 +507,15 @@ class DatabaseOperations:
         """Return maximum name length."""
         return 30
 
+    def integer_field_range(self, internal_type):
+        """Return min/max values for integer fields."""
+        if internal_type == "BigIntegerField":
+            return (-9223372036854775808, 9223372036854775807)
+        elif internal_type == "SmallIntegerField":
+            return (-32768, 32767)
+        else:
+            return (-2147483648, 2147483647)
+
 
 class DatabaseValidation:
     """LDAP database validation."""

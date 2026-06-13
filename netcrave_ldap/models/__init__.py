@@ -86,6 +86,19 @@ from .icap import IcapService, IcapUser
 from .certificate import CertificateTemplate, CertificateProfile, CertificateRecord, CertificateAuthority
 from .corba import CorbaContainer, CorbaObject, CorbaObjectReference
 from .java import JavaContainer, JavaObject, JavaSerializedObject, JavaMarshalledObject, JavaNamingReference
+from .cosine import (
+    PilotObject,
+    PilotPerson,
+    Account,
+    Document,
+    Room,
+    Domain,
+    DNSDomain,
+    DomainRelatedObject,
+    FriendlyCountry,
+    SimpleSecurityObject,
+    PilotOrganization,
+)
 
 __all__ = [
     # Base classes
@@ -182,4 +195,16 @@ __all__ = [
     "JavaSerializedObject",
     "JavaMarshalledObject",
     "JavaNamingReference",
+    # COSINE (RFC1274)
+    "PilotObject",
+    "PilotPerson",
+    "Account",
+    "Document",
+    "Room",
+    "Domain",
+    "DNSDomain",
+    "DomainRelatedObject",
+    "FriendlyCountry",
+    "SimpleSecurityObject",
+    "PilotOrganization",
 ]
