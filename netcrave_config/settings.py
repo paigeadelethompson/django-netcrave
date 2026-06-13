@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "netcrave",          # Project management commands
     "netcrave_settings",
     "netcrave_ldap",
     "netcrave_ca",

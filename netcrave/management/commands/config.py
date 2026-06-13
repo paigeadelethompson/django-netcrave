@@ -29,8 +29,8 @@ class Command(BaseCommand):
         output_dir = options.get("output_dir")
 
         if output_dir is None:
-            home = Path.home()
-            output_dir = home / ".django-netcrave"
+            # Only generate configs in user's home directory
+            output_dir = Path.home() / ".django-netcrave"
         else:
             output_dir = Path(output_dir)
 
@@ -38,6 +38,9 @@ class Command(BaseCommand):
         output_dir.mkdir(parents=True, exist_ok=True)
 
         self.stdout.write(f"Generating configuration in {output_dir}")
+
+        # Generate settings package init
+        self._generate_init(output_dir, force)
 
         # Generate settings.py
         self._generate_settings(output_dir, force)
@@ -54,8 +57,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"\nConfiguration generated in {output_dir}"))
         self.stdout.write("Next steps:")
         self.stdout.write(f"  cd {output_dir}")
-        self.stdout.write("  python manage.py migrate")
-        self.stdout.write("  python manage.py createsuperuser")
+        self.stdout.write("  poetry run netcrave migrate")
+        self.stdout.write("  poetry run netcrave createsuperuser")
 
     def _generate_settings(self, output_dir: Path, force: bool):
         """Generate the Django settings file."""
@@ -74,6 +77,7 @@ Django settings for netcrave.
 """
 
 import os
+import secrets
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -114,7 +118,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "settings.urls"
+ROOT_URLCONF = "urls"
 
 TEMPLATES = [
     {{
@@ -132,8 +136,8 @@ TEMPLATES = [
     }},
 ]
 
-WSGI_APPLICATION = "settings.wsgi.application"
-ASGI_APPLICATION = "settings.asgi.application"
+WSGI_APPLICATION = "wsgi.application"
+ASGI_APPLICATION = "asgi.application"
 
 # Database - Using Netcrave LDAP Backend for OpenLDAP
 DATABASES = {{
@@ -321,6 +325,18 @@ ICAP_LOG_RETENTION_DAYS = int(os.environ.get("ICAP_LOG_RETENTION_DAYS", 90))
         with open(settings_file, "w") as f:
             f.write(settings_content)
         self.stdout.write(f"  Created: {settings_file}")
+
+    def _generate_init(self, output_dir: Path, force: bool):
+        """Generate an __init__.py file for the settings package."""
+        init_file = output_dir / "__init__.py"
+
+        if not force and init_file.exists():
+            self.stdout.write(f"  {init_file} already exists (use --force to overwrite)")
+            return
+
+        with open(init_file, "w") as f:
+            f.write('"""\nSettings package for netcrave.\n"""')
+        self.stdout.write(f"  Created: {init_file}")
 
     def _generate_urls(self, output_dir: Path, force: bool):
         """Generate the URL configuration file."""
